@@ -1,0 +1,120 @@
+#+TITLE: Emacs Literate Configuration
+#+AUTHOR: Denis
+#+PROPERTY: header-args :tangle yes
+
+* Configuration
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Denis"
+user-mail-address "denis@devtty.de")
+#+END_SRC
+
+
+** Packages
+
+#+BEGIN_SRC emacs-lisp
+(eval-and-compile
+(setq load-prefer-newer t
+package-user-dir "~/.emacs.d/elpa"
+package-init-file-ensured t
+package-enable-at-startup nil)
+
+(unless (file-directory-p package-user-dir)
+(make-directory package-user-dir t)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq use-package-always-defer t
+use-package-verbose t)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (eval-and-compile
+    (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (eval-when-compile
+    (require 'package)
+
+    (unless (assoc-default "melpa" package-archives)
+      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+    (unless (assoc-default "org" package-archives)
+      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+
+    (package-initialize)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (require 'use-package)
+    (setq use-package-always-ensure t))
+#+END_SRC
+
+** Packages 2
+*** Magit
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :commands (magit-status magit-blame magit-log-buffer-file magit-log-all))
+#+END_SRC
+
+*** Projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :demand t)
+#+END_SRC
+
+*** Org
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :ensure org-plus-contrib
+  :pin org
+  :defer t)
+(require 'cl)
+(setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+#+END_SRC
+
+** Backup
+#+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+(setq delete-old-versions -1)
+(setq version-control t)
+#+END_SRC
+
+** Windows control
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
+#+END_SRC
+
+** Font
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono NL-10" ))
+(set-face-attribute 'default t :font "JetBrains Mono NL-10" )
+#+END_SRC
+** spacemacs theme
+
+Setup spacemacs theme without spacemacs [[http://pragmaticemacs.com/emacs/get-that-spacemacs-look-without-spacemacs/][Spacemacs without spacemacs]]
+
+#+BEGIN_SRC emacs-lisp
+(use-package spacemacs-theme
+ :ensure t
+ :init
+ (load-theme 'spacemacs-dark t)
+ (setq spacemacs-theme-org-agenda-height nil)
+ (setq spacemacs-theme-org-height nil))
+ ;; set sizes here to stop spacemacs theme resizing these
+(set-face-attribute 'org-level-1 nil :height 1.0)
+(set-face-attribute 'org-level-2 nil :height 1.0)
+(set-face-attribute 'org-level-3 nil :height 1.0)
+(set-face-attribute 'org-scheduled-today nil :height 1.0)
+(set-face-attribute 'org-agenda-date-today nil :height 1.1)
+(set-face-attribute 'org-table nil :foreground "#008787")
+(use-package spaceline
+  :demand t
+  :init
+  (setq powerline-default-separator 'arrow-fade)
+  :config
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
+#+END_SRC
