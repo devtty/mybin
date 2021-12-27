@@ -7,6 +7,7 @@
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Denis"
 user-mail-address "denis@devtty.de")
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 #+END_SRC
 
 
@@ -38,11 +39,12 @@ use-package-verbose t)
     (require 'package)
 
     (unless (assoc-default "melpa" package-archives)
-      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+      (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
     (unless (assoc-default "org" package-archives)
-      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+      (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
 
     (package-initialize)
+    (package-refresh-contents)
     (unless (package-installed-p 'use-package)
       (package-refresh-contents)
       (package-install 'use-package))
@@ -71,7 +73,21 @@ use-package-verbose t)
   :defer t)
 (require 'cl)
 (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-plantuml-jar-path (expand-file-name "~/Downloads/plantuml.1.2020.6.jar"))
+  (setq org-babel-load-languages
+	'((emacs-lisp . t)
+	  (gnuplot . t)
+	  (plantuml . t)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   org-babel-load-languages)
+  ;;(add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+#+END_SRC
+
 
 ** Backup
 #+BEGIN_SRC emacs-lisp
